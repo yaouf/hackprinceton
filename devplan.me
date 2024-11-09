@@ -1,0 +1,151 @@
+# Google Calendar Integration Web App
+
+## Project Overview:
+This project involves creating a web application using Flask that allows users to authenticate with their Google account, access their Google Calendar, and add events using natural language input. The app uses Google OAuth 2.0 for authentication, the Google Calendar API for event management, and Flask as the web framework. The application is designed for local development (localhost).
+
+---
+
+## Table of Contents:
+- [1. Initial Setup and Environment Configuration](#1-initial-setup-and-environment-configuration)
+- [2. Implementing Google OAuth 2.0 Authentication](#2-implementing-google-oauth-20-authentication)
+- [3. Implement Google Calendar API Integration](#3-implement-google-calendar-api-integration)
+- [4. Implement Event Creation and Natural Language Processing (NLP)](#4-implement-event-creation-and-natural-language-processing-nlp)
+- [5. User Interface and User Experience (UI/UX)](#5-user-interface-and-user-experience-uiux)
+- [6. Finalizing Features](#6-finalizing-features)
+
+---
+
+## 1. Initial Setup and Environment Configuration
+
+### 1.1. Set up Development Environment
+- **Objective**: Set up a Python virtual environment and install necessary dependencies.
+- **Tasks**:
+  1. Create a Python virtual environment using `python3 -m venv venv`.
+  2. Install dependencies:  
+     Run `pip install flask google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client`.
+  3. Set up version control using Git:  
+     Initialize a Git repository (`git init`) and push it to a GitHub repository.
+
+### 1.2. Obtain OAuth Credentials
+- **Objective**: Set up Google API credentials.
+- **Tasks**:
+  1. Create a Google Cloud project.
+  2. Enable the Google Calendar API.
+  3. Set up OAuth 2.0 credentials in the Google Cloud Console.
+  4. Download the `client_secrets.json` file and place it in the root directory.
+
+### 1.3. Set up Local Development Environment
+- **Objective**: Set up a local development environment (localhost) to test the application.
+- **Tasks**:
+  1. Set up Flask app for local testing.
+  2. Ensure Flask is running locally by visiting `http://localhost:5000`.
+
+---
+
+## 2. Implementing Google OAuth 2.0 Authentication
+
+### 2.1. OAuth Flow Setup
+- **Objective**: Implement the Google OAuth 2.0 authentication flow for user login.
+- **Tasks**:
+  1. Create the `/login` route to initiate OAuth authentication.
+  2. Use the `google-auth-oauthlib` library to create an OAuth flow.
+  3. Implement the `/callback` route to handle the OAuth callback and store the credentials in the session.
+
+### 2.2. Secure Session Handling
+- **Objective**: Securely manage OAuth credentials in user sessions.
+- **Tasks**:
+  1. Store the user credentials in the Flask session.
+  2. Ensure proper management of session data (e.g., clearing on logout).
+  3. Use Flask's session management to store the OAuth tokens securely.
+
+---
+
+## 3. Implement Google Calendar API Integration
+
+### 3.1. Google Calendar API Setup
+- **Objective**: Set up the connection to the Google Calendar API using OAuth credentials.
+- **Tasks**:
+  1. Create the `googleapiclient.discovery.build` service to interact with Google Calendar.
+  2. Set up the `google.oauth2.credentials.Credentials` object from session data.
+
+### 3.2. Fetch and Display User Calendar Events
+- **Objective**: Fetch the user's calendar events and display them on the frontend.
+- **Tasks**:
+  1. Implement a route `/calendar` that fetches events from the user's Google Calendar.
+  2. Use `service.events().list()` to retrieve events and pass them to the template for rendering.
+
+---
+
+## 4. Implement Event Creation and Natural Language Processing (NLP)
+
+### 4.1. Design Event Input Form
+- **Objective**: Allow users to input event details (e.g., event name, time, and date) through a simple form.
+- **Tasks**:
+  1. Create a form on the front-end (HTML, CSS) where users can enter event details (e.g., title, date, time).
+  2. Display form data in a `POST` request.
+
+### 4.2. Parse Natural Language Input
+- **Objective**: Parse natural language input for event creation (e.g., “Meeting at 2 PM tomorrow”).
+- **Tasks**:
+  1. Integrate an NLP parser (e.g., `dateparser` or custom regex-based parsing) to interpret event descriptions.
+  2. Ensure correct interpretation of dates, times, and event names.
+
+### 4.3. Add Events to Google Calendar
+- **Objective**: Create events on the user's Google Calendar based on the parsed input.
+- **Tasks**:
+  1. Implement a `create_event_in_calendar` function to create an event using `service.events().insert()`.
+  2. Allow users to review and confirm events before adding them to their calendar.
+
+---
+
+## 5. User Interface and User Experience (UI/UX)
+
+### 5.1. Design the Frontend
+- **Objective**: Create a simple and clean user interface for the application.
+- **Tasks**:
+  1. Design the home page (`index.html`).
+  2. Design the confirmation page (`confirm.html`) to review event details before final submission.
+  3. Use Flask's `render_template()` to serve the HTML pages dynamically.
+  4. Add CSS for styling (consider using Bootstrap or custom styles for simplicity).
+
+### 5.2. Implement Frontend Logic
+- **Objective**: Implement frontend interactivity using JavaScript.
+- **Tasks**:
+  1. Use JavaScript to handle form submissions, pass data to the backend, and display success/error messages.
+  2. Implement AJAX calls for seamless user interaction.
+
+---
+
+## 6. Finalizing Features
+
+### 6.1. Implement Logout Functionality
+- **Objective**: Allow users to log out and clear their credentials from the session.
+- **Tasks**:
+  1. Create a `/logout` route to clear the user session.
+  2. Display a logout success message using Flask's `flash()`.
+
+### 6.2. Testing and Debugging
+- **Objective**: Ensure all features work as expected and fix any bugs.
+- **Tasks**:
+  1. Conduct thorough testing for authentication, event creation, and calendar integration.
+  2. Debug and fix any issues that arise during testing.
+
+### 6.3. Deployment (Optional)
+- **Objective**: Deploy the application for production use.
+- **Tasks**:
+  1. Set up a production environment using platforms like Heroku or AWS.
+  2. Update the `client_secrets.json` file to support production OAuth.
+  3. Ensure secure handling of credentials and sensitive data in production.
+
+---
+
+## Technologies Used:
+- **Backend**: Flask (Python web framework)
+- **Google API**: Google Calendar API, Google OAuth 2.0
+- **Frontend**: HTML, CSS (with optional Bootstrap for styling), JavaScript
+- **Database**: None (using session to store credentials)
+
+---
+
+## License:
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
