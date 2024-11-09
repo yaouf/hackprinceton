@@ -1,0 +1,17 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Calendar Automation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Schedule an Event</h1>
+    <form method="post">
+        <label for="prompt">Enter event details:</label>
+        <input type="text" id="prompt" name="prompt" placeholder="E.g., Meeting at 5pm tomorrow">
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

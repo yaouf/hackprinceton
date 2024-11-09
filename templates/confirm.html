@@ -1,0 +1,21 @@
+<!-- templates/confirm.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Event</title>
+</head>
+<body>
+    <h2>Confirm Event Details</h2>
+    <form action="{{ url_for('confirm') }}" method="post">
+        <p>Event Title: {{ event_data["summary"] }}</p>
+        <p>Event Time: {{ event_data["start"]["dateTime"] }}</p>
+        <p>Location: {{ event_data["location"] }}</p>
+        <input type="hidden" name="summary" value="{{ event_data['summary'] }}">
+        <input type="hidden" name="start" value="{{ event_data['start']['dateTime'] }}">
+        <input type="hidden" name="end" value="{{ event_data['end']['dateTime'] }}">
+        <input type="hidden" name="location" value="{{ event_data['location'] }}">
+        <button type="submit">Confirm</button>
+    </form>
+</body>
+</html>
