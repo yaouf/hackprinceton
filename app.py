@@ -15,7 +15,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # For local testing only
 
 # Google OAuth 2.0 Configuration
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-CLIENT_SECRET_FILE = 'client_secret.json'
+CLIENT_SECRET_FILE = 'credentials.json'
 
 # Routes
 @app.route("/login")
