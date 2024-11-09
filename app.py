@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import google.auth
 import google.auth.transport.requests
@@ -10,14 +9,15 @@ from calendar_utils import parse_event, create_event_in_calendar
 
 # App Setup
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # Replace with a secure key in production
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # For local testing only
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # For production, use a more secure key
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # For local testing only, remove for production
 
 # Google OAuth 2.0 Configuration
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 CLIENT_SECRET_FILE = 'credentials.json'
 
 # Routes
+
 @app.route("/login")
 def login():
     """Starts the OAuth 2.0 authorization flow."""
@@ -31,37 +31,42 @@ def login():
         access_type="offline", include_granted_scopes="true"
     )
     
-    # Store state in session to verify on callback
+    # Store the state in session to verify it later during the callback
     session["state"] = state
     return redirect(authorization_url)
-
 
 @app.route("/terms")
 def terms():
     """Serves the terms of service page."""
     return render_template("terms.html")
 
-
 @app.route("/privacy")
 def privacy():
     """Serves the privacy policy page."""
     return render_template("privacy.html")
 
-
 @app.route("/callback")
 def callback():
-    """Handles OAuth callback, stores user credentials."""
-    state = session["state"]
+    """Handles the OAuth callback, stores user credentials in session."""
+    # Ensure state matches to prevent CSRF
+    state = session.get("state")
+    if not state:
+        flash("State mismatch. Possible CSRF attack.", "error")
+        return redirect(url_for("login"))
     
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRET_FILE, scopes=SCOPES, state=state
     )
     flow.redirect_uri = url_for("callback", _external=True)
     
-    # Get authorization response from the request URL
+    # Get the authorization response from the request URL
     authorization_response = request.url
-    flow.fetch_token(authorization_response=authorization_response)
-    
+    try:
+        flow.fetch_token(authorization_response=authorization_response)
+    except Exception as e:
+        flash(f"Error during token fetch: {str(e)}", "error")
+        return redirect(url_for("login"))
+
     # Store credentials in the session
     credentials = flow.credentials
     session["credentials"] = {
@@ -103,7 +108,7 @@ def index():
 
 @app.route("/confirm", methods=["POST"])
 def confirm():
-    """Creates the event in the user's calendar."""
+    """Creates the event in the user's Google Calendar."""
     if "credentials" not in session:
         return redirect(url_for("login"))
     
@@ -111,9 +116,12 @@ def confirm():
     service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
     
     event_data = request.form.to_dict()
-    event = create_event_in_calendar(service, event_data)
+    try:
+        event = create_event_in_calendar(service, event_data)
+        flash("Event created successfully!")
+    except Exception as e:
+        flash(f"Error creating event: {str(e)}", "error")
     
-    flash("Event created successfully!")
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
